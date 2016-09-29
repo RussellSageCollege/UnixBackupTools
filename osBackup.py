@@ -49,8 +49,8 @@ class osBackup:
         os.system(
             'dd bs=1M if=' + config.destination_disk + ' | gzip -9 | ssh ' # Pipe DD to gzip then to SSH
             + config.remote_host_user + '@' + config.remote_host
-            + ' "cat >' + config.remote_file_location # Cat the incoming data to the backup file
-            + ' backup-' + socket.gethostname()
+            + ' "cat > ' + config.remote_file_location # Cat the incoming data to the backup file
+            + 'backup-' + socket.gethostname()
             + '-' + timeStamp + '.img.gz"'
         )
 
