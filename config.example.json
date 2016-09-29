@@ -1,13 +1,14 @@
 {
-  "backup_dirs": [
-    "/etc",
-    "/var",
-    "/usr"
-  ],
-  "source_disk": "/dev/sda",
-  "destination_disk": "/dev/sdb",
-  "destination_mount": "/mnt/cloneDisk",
-  "remote_host": "repo.domain.tld",
-  "remote_host_user": "user",
-  "remote_file_location": "/backup/"
+  "osBackup": {
+    "disk_for_clone": "/dev/sdb",
+    "mount_dir_for_clone": "/mnt/cloneDisk",
+    "remote_repo_user": "user",
+    "remote_repo_host": "repo.domain.tld",
+    "remote_repo_backup_location": "/backup",
+    "directories_to_backup": [
+      "/etc",
+      "/var",
+      "/usr"
+    ]
+  }
 }

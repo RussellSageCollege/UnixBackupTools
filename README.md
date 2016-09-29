@@ -31,7 +31,7 @@ To backup the root filesystem:
 ```
 
 
-# Updating
+## Updating
 
 ```shell
 cd UnixBackupTools/;
