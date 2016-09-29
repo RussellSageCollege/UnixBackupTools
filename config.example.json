@@ -1,0 +1,13 @@
+{
+  "backup_dirs": [
+    "/etc",
+    "/var",
+    "/usr"
+  ],
+  "source_disk": "/dev/sda",
+  "destination_disk": "/dev/sdb",
+  "destination_mount": "/mnt/cloneDisk",
+  "remote_host": "repo.domain.tld",
+  "remote_host_user": "user",
+  "remote_file_location": "/backup/"
+}
