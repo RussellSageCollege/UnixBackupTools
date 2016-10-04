@@ -34,7 +34,7 @@ class osBackup:
                             # rsync(sourceDir, destination)
                         else:
                             print(
-                                '[WARN] Not syncing... source is the same as destination! That\'s some inception level stuff!')
+                                '[WARN] Not syncing... source is the same as destination! ' + sourceDir + ' === ' + destination)
                     else:
                         print(
                             '[WARN] Not syncing backup disk mount. to backup mount. That\'s some inception level stuff!')
