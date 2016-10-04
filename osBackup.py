@@ -19,7 +19,7 @@ class osBackup:
                 # Ensure that we are not just backing up the root mount, this is bad since we don't need /dev and /tmp and other dirs.
                 if not sourceDir == '/':
                     # Build the destination path
-                    destination = os.path.join(sourceDir, backupMount)
+                    destination = os.path.normpath(backupMount + '/' + sourceDir)
                     # Make sure we are not syncing the backup mount to the backup location
                     if not sourceDir == backupMount:
                         if not sourceDir == destination:
