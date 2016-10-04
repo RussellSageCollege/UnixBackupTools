@@ -19,6 +19,16 @@ cp config.example.json config.json
 vi config.json
 ```
 
+## Updating
+
+```shell
+cd UnixBackupTools/;
+# pull latest
+git fetch --all;
+# Chekout to the latest tag
+git checkout $(git describe --tags $(git rev-list --tags --max-count=1));
+```
+
 ## Backup root file system
 
 To backup the root filesystem:
@@ -30,16 +40,6 @@ To backup the root filesystem:
 ./osBackup.py
 ```
 
-
-## Updating
-
-```shell
-cd UnixBackupTools/;
-# pull latest
-git fetch --all;
-# Chekout to the latest tag
-git checkout $(git describe --tags $(git rev-list --tags --max-count=1));
-```
 
 ## Restore an Image
 
