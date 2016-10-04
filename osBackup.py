@@ -2,46 +2,61 @@
 
 from __future__ import print_function
 from helpers import mountDrive, mkdirP, unMountDrive, rsync, readConfig
-import os
-import socket
-import datetime
+import os, socket, datetime, sys
 
 
 class osBackup:
     # rSync the directories to the backup disk
-    def syncToBackupDrive(self, dirsToBackup, backupMount):
+    def syncToBackupDrive(self, dirsToBackup, backupMount, cloneDisk):
         # Loop over directories that should be synced
         for sourceDir in dirsToBackup:
             # Normalize the path
             sourceDir = os.path.abspath(sourceDir)
-            # Ensure that the backup target dir exists
-            if os.path.isdir(sourceDir):
-                # Ensure that we are not just backing up the root mount, this is bad since we don't need /dev and /tmp and other dirs.
-                if not sourceDir == '/':
-                    # Make sure we are not syncing the backup mount to the backup location
-                    if not sourceDir == backupMount:
-                        # Build the destination path
-                        destination = os.path.normpath(backupMount + '/' + sourceDir)
-                        if not sourceDir == destination:
-                            # Check to make sure that the destination dir exists
-                            if not os.path.isdir(destination):
-                                # If it does not exists make it
-                                print('[INFO] Creating >>> ' + destination)
-                                mkdirP(destination)
-                            # helpful output
-                            print('[INFO] Syncing ' + sourceDir + ' >>> ' + destination)
-                            # Run our rSync function
-                            rsync(sourceDir, destination)
+            # Ensure that we are not just backing up the root mount, this is bad since we don't need /dev and /tmp and other dirs.
+            if not sourceDir == '/':
+                # Make sure we are not syncing the backup mount to the backup location
+                if not sourceDir == backupMount:
+                    # Build the destination path
+                    destination = os.path.normpath(backupMount + '/' + sourceDir)
+                    if not sourceDir == destination:
+                        # Ensure that the backup disk is mounted before we proceed
+                        if os.path.ismount(backupMount):
+                            # Are we backing up a dir?
+                            if os.path.isdir(sourceDir):
+                                print('[INFO] Source Directory Found >>> ' + sourceDir)
+                                destinationIsValid = True
+                                # Check to make sure that the destination dir exists
+                                if not os.path.isdir(destination):
+                                    # If it does not exists make it
+                                    print('[INFO] Creating >>> ' + destination)
+                                    mkdirP(destination)
+
+                            elif os.path.isfile(sourceDir) or os.path.islink(sourceDir):
+                                # Or are we backing up a file?
+                                print('[INFO] Source File Found >>> ' + sourceDir)
+                                destinationIsValid = True
+                            else:
+                                print(
+                                    '[WARN] Path Not Found: ' + sourceDir + ' was selected for sync but was not found.')
+                                destinationIsValid = False
+
+                            if destinationIsValid:
+                                # helpful output
+                                print('[INFO] Syncing ' + sourceDir + ' >>> ' + destination)
+                                # Run our rSync function
+                                rsync(sourceDir, destination)
                         else:
                             print(
-                                '[WARN] Not syncing... source is the same as destination! ' + sourceDir + ' === ' + destination)
+                                '[ERROR] Not syncing... destination disk is not mounted! ' + cloneDisk + ' >>> ' + backupMount + ' --- Exiting!')
+                            sys.exit(1)
                     else:
                         print(
-                            '[WARN] Not syncing backup disk mount. to backup mount. That\'s some inception level stuff!')
+                            '[WARN] Not syncing... source is the same as destination! ' + sourceDir + ' === ' + destination)
                 else:
-                    print('[WARN] Not syncing root of filesystem. Please specify more specific directories.')
+                    print(
+                        '[WARN] Not syncing backup disk mount. to backup mount. That\'s some inception level stuff!')
             else:
-                print('[WARN] Path Not Found: ' + sourceDir + ' was selected for sync but was not found.')
+                print('[WARN] Not syncing root of filesystem. Please specify more specific directories.')
 
     # Captures a compressed disk image and SSH's the image to a remote repo
     def captureDiskImageToRepo(self, cloneDisk, sshUser, sshHost, imagePath):
@@ -83,7 +98,7 @@ class osBackup:
         # Helpful output
         print('[INFO] Starting sync to: ' + mountDir)
         # rSync target folders to backup mount
-        self.syncToBackupDrive(dirsToBackup, mountDir)
+        self.syncToBackupDrive(dirsToBackup, mountDir, cloneDisk)
         # Helpful output
         print('[INFO] Un-mounting disk: ' + cloneDisk + ' --- ' + mountDir)
         # Un-mount the backup disk(cloneDisk) from the mount folder(mountDir)
