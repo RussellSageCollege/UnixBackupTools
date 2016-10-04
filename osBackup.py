@@ -29,7 +29,7 @@ class osBackup:
                                 if not os.path.isdir(destination):
                                     # If it does not exists make it
                                     print('[INFO] Creating >>> ' + destination)
-                                    # mkdirP(destination)
+                                    mkdirP(destination)
 
                             elif os.path.isfile(sourceDir) or os.path.islink(sourceDir):
                                 destinationIsValid = True
@@ -46,8 +46,8 @@ class osBackup:
                                     print('[INFO] Syncing Directory ' + sourceDir + ' >>> ' + destination)
                                 else:
                                     print('[INFO] Syncing File ' + sourceDir + ' >>> ' + destination)
-                                    # Run our rSync function
-                                    # rsync(sourceDir, destination)
+                                # Run our rSync function
+                                rsync(sourceDir, destination)
                         else:
                             print(
                                 '[ERROR] Not syncing... destination disk is not mounted! ' + cloneDisk + ' >>> ' + backupMount + ' --- Exiting!')
