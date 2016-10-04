@@ -40,3 +40,15 @@ git fetch --all;
 # Chekout to the latest tag
 git checkout $(git describe --tags $(git rev-list --tags --max-count=1));
 ```
+
+## Restore an Image
+
+Boot to a live distro and connect a flash drive with the image.gz file.
+
+```shell
+gunzip -c /path/to/backup.img.gz | dd of=/dev/sda
+```
+
+The command above will uncompress the image send the output to dd which will write the blocks to the disk `sda`.
+
+The command may take a while to complete and you will not see any output until it has completed, be patent.
