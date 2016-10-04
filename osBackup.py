@@ -80,8 +80,10 @@ class osBackup:
         config = readConfig()
         # Get this programs config
         config = config['osBackup']
-        # Get the disk that we are trying to back up
+        # Get the disk that we are trying to back up for disk image
         cloneDisk = config['disk_for_clone']
+        # Get the partition that we are trying to back up for rSync
+        clonePart = config['root_partition_destination']
         # The path to mount the backup disk(cloneDisk) on
         mountDir = os.path.abspath(config['mount_dir_for_clone'])
         # an array of local directories on the root FS. These dirs are rSynced to the backup disk(cloneDisk)
@@ -95,16 +97,16 @@ class osBackup:
         # Build a file path for the remote repo. This is the file path of the new image
         imagePath = os.path.join(repoLocation, 'backup-' + hostname + '-' + timeStamp + '.img.gz')
         # Helpful output
-        print('[INFO] Mounting disk: ' + cloneDisk + ' >>> ' + mountDir)
-        # Mount the backup disk(cloneDisk) to the mount folder(mountDir)
-        mountDrive(cloneDisk, mountDir)
+        print('[INFO] Mounting disk: ' + clonePart + ' >>> ' + mountDir)
+        # Mount the backup disk(clonePart) to the mount folder(mountDir)
+        mountDrive(clonePart, mountDir)
         # Helpful output
         print('[INFO] Starting sync to: ' + mountDir)
         # rSync target folders to backup mount
-        self.syncToBackupDrive(dirsToBackup, mountDir, cloneDisk)
+        self.syncToBackupDrive(dirsToBackup, mountDir, clonePart)
         # Helpful output
-        print('[INFO] Un-mounting disk: ' + cloneDisk + ' --- ' + mountDir)
-        # Un-mount the backup disk(cloneDisk) from the mount folder(mountDir)
+        print('[INFO] Un-mounting disk: ' + clonePart + ' --- ' + mountDir)
+        # Un-mount the backup disk(clonePart) from the mount folder(mountDir)
         unMountDrive(mountDir)
         # Capture the backup disk with DD and send it to a remote repository via ssh
         self.captureDiskImageToRepo(cloneDisk, sshUser, sshHost, imagePath)
