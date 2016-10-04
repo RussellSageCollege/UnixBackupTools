@@ -25,11 +25,12 @@ class osBackup:
                         # Check to make sure that the destination dir exists
                         if not os.path.isdir(destination):
                             # If it does not exists make it
-                            mkdirP(destination)
+                            print('[INFO] Creating >>> ' + destination)
+                            #mkdirP(destination)
                         # helpful output
                         print('[INFO] Syncing ' + sourceDir + ' >>> ' + destination)
                         # Run our rSync function
-                        rsync(sourceDir, destination)
+                        #rsync(sourceDir, destination)
                     else:
                         print('[WARN] Not syncing backup disk mount. to backup mount. That\'s some inception level stuff!')
                 else:
