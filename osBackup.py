@@ -55,19 +55,19 @@ class osBackup:
         # Read the config file
         config = readConfig()
         # Get this programs config
-        config = config.osBackup
+        config = config['osBackup']
         # Get the disk that we are trying to back up
-        cloneDisk = config.disk_for_clone
+        cloneDisk = config['disk_for_clone']
         # The path to mount the backup disk(cloneDisk) on
-        mountDir = os.path.abspath(config.mount_dir_for_clone)
+        mountDir = os.path.abspath(config['mount_dir_for_clone'])
         # an array of local directories on the root FS. These dirs are rSynced to the backup disk(cloneDisk)
-        dirsToBackup = config.directories_to_backup
+        dirsToBackup = config['directories_to_backup']
         # The remote repo dir on the remote host. This is were our dd images will be stored via ssh
-        repoLocation = config.remote_repo_backup_location
+        repoLocation = config['remote_repo_backup_location']
         # The the remote ssh user for the remote repo host
-        sshUser = config.remote_repo_user
+        sshUser = config['remote_repo_user']
         # The address or dns name of the remote repo
-        sshHost = config.remote_repo_host
+        sshHost = config['remote_repo_host']
         # Build a file path for the remote repo. This is the file path of the new image
         imagePath = os.path.join(repoLocation, 'backup-' + hostname + '-' + timeStamp + '.img.gz')
         # Helpful output
