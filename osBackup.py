@@ -18,20 +18,20 @@ class osBackup:
             if os.path.isdir(sourceDir):
                 # Ensure that we are not just backing up the root mount, this is bad since we don't need /dev and /tmp and other dirs.
                 if not sourceDir == '/':
-                    # Build the destination path
-                    destination = os.path.normpath(backupMount + '/' + sourceDir)
                     # Make sure we are not syncing the backup mount to the backup location
                     if not sourceDir == backupMount:
+                        # Build the destination path
+                        destination = os.path.normpath(backupMount + '/' + sourceDir)
                         if not sourceDir == destination:
                             # Check to make sure that the destination dir exists
                             if not os.path.isdir(destination):
                                 # If it does not exists make it
                                 print('[INFO] Creating >>> ' + destination)
-                                # mkdirP(destination)
+                                mkdirP(destination)
                             # helpful output
                             print('[INFO] Syncing ' + sourceDir + ' >>> ' + destination)
                             # Run our rSync function
-                            # rsync(sourceDir, destination)
+                            rsync(sourceDir, destination)
                         else:
                             print(
                                 '[WARN] Not syncing... source is the same as destination! ' + sourceDir + ' === ' + destination)
