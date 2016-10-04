@@ -23,28 +23,31 @@ class osBackup:
                         if os.path.ismount(backupMount):
                             # Are we backing up a dir?
                             if os.path.isdir(sourceDir):
-                                print('[INFO] Source Directory Found >>> ' + sourceDir)
                                 destinationIsValid = True
+                                isDir = True
                                 # Check to make sure that the destination dir exists
                                 if not os.path.isdir(destination):
                                     # If it does not exists make it
                                     print('[INFO] Creating >>> ' + destination)
-                                    #mkdirP(destination)
+                                    # mkdirP(destination)
 
                             elif os.path.isfile(sourceDir) or os.path.islink(sourceDir):
-                                # Or are we backing up a file?
-                                print('[INFO] Source File Found >>> ' + sourceDir)
                                 destinationIsValid = True
+                                isDir = False
                             else:
                                 print(
                                     '[WARN] Path Not Found: ' + sourceDir + ' was selected for sync but was not found.')
                                 destinationIsValid = False
+                                isDir = False
 
                             if destinationIsValid:
                                 # helpful output
-                                print('[INFO] Syncing ' + sourceDir + ' >>> ' + destination)
-                                # Run our rSync function
-                                #rsync(sourceDir, destination)
+                                if isDir:
+                                    print('[INFO] Syncing Directory ' + sourceDir + ' >>> ' + destination)
+                                else:
+                                    print('[INFO] Syncing File ' + sourceDir + ' >>> ' + destination)
+                                    # Run our rSync function
+                                    # rsync(sourceDir, destination)
                         else:
                             print(
                                 '[ERROR] Not syncing... destination disk is not mounted! ' + cloneDisk + ' >>> ' + backupMount + ' --- Exiting!')
