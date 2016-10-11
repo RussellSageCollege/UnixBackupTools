@@ -12,6 +12,13 @@ def readConfig():
         # return the json object as a python object
         return json.load(data_file)
 
+# save the config file
+def saveConfig(config):
+    # Open the config file
+    with open('config.json', 'w') as configFile:
+        # Dump the json to the config file
+        json.dump(config, configFile)
+
 
 # Helper function that performs an mkdir -p
 def mkdirP(path):
