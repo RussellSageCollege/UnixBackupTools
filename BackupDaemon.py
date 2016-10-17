@@ -119,6 +119,13 @@ def on_end_backup_task(*args):
     return True
 
 
+def enter_initial_ready_state():
+    # Notify the server that you are ready
+    emit_new_state(STATE_FREE)
+    # Hang out
+    IO.wait()
+
+
 def main():
     # Set globals
     global BACKUP_PROCESS, STATE_BUSY, STATE_FREE
@@ -134,10 +141,8 @@ def main():
     IO.on('new_backup_task', on_new_backup_task)
     # Listen for cancel on job
     IO.on('end_backup_task', on_end_backup_task)
-    # Notify the server that you are ready
-    emit_new_state(STATE_FREE)
-    # Hang out
-    IO.wait()
+    # Enter the initial ready state
+    enter_initial_ready_state()
 
 
 if __name__ == "__main__":
