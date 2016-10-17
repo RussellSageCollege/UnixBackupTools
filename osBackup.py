@@ -87,7 +87,7 @@ def captureDiskImageToRepo(cloneDisk, sshUser, sshHost, imagePath, network_compr
             # Run the backup through GZip on the server
             os.system(
                 'pv -p -t -e -a -b ' + cloneDisk + '| pigz -' + str(
-                    network_compression_level) + ' | ssh ' + sshUser + '@' + sshHost + ' "unpigz -c | pigz -' + str(
+                    network_compression_level) + ' | ssh ' + sshUser + '@' + sshHost + ' "pigz -' + str(
                     repo_compression_level) + ' | pv -q > ' + imagePath + '"'
             )
 
