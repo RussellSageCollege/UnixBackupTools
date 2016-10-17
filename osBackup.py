@@ -109,5 +109,5 @@ def performBackup():
     # Un-mount the backup disk(clonePart) from the mount folder(mountDir)
     unMountDrive(mountDir)
     # Capture the backup disk with DD and send it to a remote repository via ssh
-    captureDiskImageToRepo(cloneDisk, sshUser, sshHost, imagePath)
+    #captureDiskImageToRepo(cloneDisk, sshUser, sshHost, imagePath)
 

@@ -46,4 +46,4 @@ def unMountDrive(folder):
 # rsync wrapper
 def rsync(source, destination):
     # Open a shell and run an rsync command
-    os.system('rsync -aH --delete ' + source + ' ' + destination + ';')
+    os.system('rsync -aH --delete --info=progress2' + source + ' ' + destination + ';')
