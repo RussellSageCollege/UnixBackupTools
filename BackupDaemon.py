@@ -23,7 +23,8 @@ SERVER_PORT = 3000
 
 def backup_now():
     try:
-        performBackup()
+        image_path = performBackup()
+        emit_backup_completed(image_path)
     except Exception:
         pass
 
@@ -68,6 +69,15 @@ def emit_new_state(state):
         'hostname': HOST_NAME,
         'instance_key': INSTANCE_KEY,
         'busy': CURRENT_STATE
+    })
+
+
+def emit_backup_completed(image_path):
+    print('Notifying server of new image...')
+    IO.emit('image', {
+        'hostname': HOST_NAME,
+        'instance_key': INSTANCE_KEY,
+        'image': image_path
     })
 
 

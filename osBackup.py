@@ -66,11 +66,9 @@ def captureDiskImageToRepo(cloneDisk, sshUser, sshHost, imagePath, network_compr
     # Helpful output
     print('[INFO] Sending image of: ' + cloneDisk + ' >>> ' + sshUser + '@' + sshHost + ':' + imagePath)
     # Run dd with the backup disk(cloneDisk) as the source. Pass the blocks through gzip to compress. Then pass to ssh to store remotely.
-    disk_size = os.popen("fdisk -l | grep /dev/sda | awk 'NR==1{print $5}'").read()
-
     if repo_decompress:
         os.system(
-            'pv -p -t -e -a -b ' + cloneDisk + '| gzip -' + str(
+            'pv -p -t -e -a -b ' + cloneDisk + '| pigz -' + str(
                 network_compression_level) + ' | ssh ' + sshUser + '@' + sshHost + ' "unpigz -c | pv -q > ' + imagePath + '"'
         )
     else:
@@ -82,13 +80,13 @@ def captureDiskImageToRepo(cloneDisk, sshUser, sshHost, imagePath, network_compr
         if repo_compression_level == 0:
             # Don't bother running Gzip on the server side
             os.system(
-                'pv -p -t -e -a -b ' + cloneDisk + '| gzip -' + str(
+                'pv -p -t -e -a -b ' + cloneDisk + '| pigz -' + str(
                     network_compression_level) + ' | ssh ' + sshUser + '@' + sshHost + ' "pv -q > ' + imagePath + '"'
             )
         else:
             # Run the backup through GZip on the server
             os.system(
-                'pv -p -t -e -a -b ' + cloneDisk + '| gzip -' + str(
+                'pv -p -t -e -a -b ' + cloneDisk + '| pigz -' + str(
                     network_compression_level) + ' | ssh ' + sshUser + '@' + sshHost + ' "unpigz -c | pigz -' + str(
                     repo_compression_level) + ' | pv -q > ' + imagePath + '"'
             )
@@ -134,3 +132,5 @@ def performBackup():
     unMountDrive(mountDir)
     # Capture the backup disk with DD and send it to a remote repository via ssh
     captureDiskImageToRepo(cloneDisk, sshUser, sshHost, imagePath)
+    # Return the image path name
+    return imagePath
