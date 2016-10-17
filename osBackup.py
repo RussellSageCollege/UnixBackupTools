@@ -61,7 +61,7 @@ def syncToBackupDrive(dirsToBackup, backupMount, cloneDisk):
             # Captures a compressed disk image and SSH's the image to a remote repo
 
 
-def captureDiskImageToRepo(self, cloneDisk, sshUser, sshHost, imagePath):
+def captureDiskImageToRepo(cloneDisk, sshUser, sshHost, imagePath):
     # Helpful output
     print('[INFO] Sending image of: ' + cloneDisk + ' >>> ' + sshUser + '@' + sshHost + ':' + imagePath)
     # Run dd with the backup disk(cloneDisk) as the source. Pass the blocks through gzip to compress. Then pass to ssh to store remotely.
@@ -110,3 +110,4 @@ def performBackup():
     unMountDrive(mountDir)
     # Capture the backup disk with DD and send it to a remote repository via ssh
     captureDiskImageToRepo(cloneDisk, sshUser, sshHost, imagePath)
+
