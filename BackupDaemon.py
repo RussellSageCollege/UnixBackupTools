@@ -22,15 +22,10 @@ SERVER_PORT = 3000
 
 
 def backup_now():
-    #try:
-    #    performBackup()
-    #except Exception:
-    #    pass
-    i = 0
-    while i < 3:
-        print('Performing a backup...')
-        sleep(6)
-        i += 1
+    try:
+        performBackup()
+    except Exception:
+        pass
 
 
 def load_config():
@@ -99,12 +94,15 @@ def on_new_backup_task(*args):
         # Notify the server that you are busy
         emit_new_state(STATE_BUSY)
         global BACKUP_PROCESS
-        # Build a new process for the backup job
-        BACKUP_PROCESS = Process(target=backup_now)
-        # Start the job
-        BACKUP_PROCESS.start()
-        # Join it to the pool
-        BACKUP_PROCESS.join()
+        try:
+            # Build a new process for the backup job
+            BACKUP_PROCESS = Process(target=backup_now)
+            # Start the job
+            BACKUP_PROCESS.start()
+            # Join it to the pool
+            BACKUP_PROCESS.join()
+        except Exception:
+            pass
         # Set the state back to free
         emit_new_state(STATE_FREE)
         return True
