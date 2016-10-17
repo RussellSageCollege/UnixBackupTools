@@ -7,7 +7,7 @@ import json
 import socket
 from socketIO_client import SocketIO, LoggingNamespace
 from helpers import readConfig, saveConfig
-from multiprocessing import Process
+from multiprocessing import Process, Queue
 from osBackup import performBackup
 
 STATE_BUSY = 1
@@ -99,12 +99,15 @@ def on_new_backup_task(*args):
         print('Starting new backup task...')
         # Notify the server that you are busy
         emit_new_state(STATE_BUSY)
+        global BACKUP_PROCESS
         # Build a new process for the backup job
         BACKUP_PROCESS = Process(target=backup_now)
         # Start the job
         BACKUP_PROCESS.start()
         # Join it to the pool
         BACKUP_PROCESS.join()
+        # Set the state back to free
+        emit_new_state(STATE_FREE)
         return True
     else:
         return False
