@@ -62,7 +62,7 @@ def syncToBackupDrive(dirsToBackup, backupMount, cloneDisk):
 
 
 def captureDiskImageToRepo(cloneDisk, sshUser, sshHost, imagePath, network_compression_level=1,
-                           repo_compression_level=8, repo_decompress=False):
+                           repo_compression_level=6, repo_decompress=False):
     # Helpful output
     print('[INFO] Sending image of: ' + cloneDisk + ' >>> ' + sshUser + '@' + sshHost + ':' + imagePath)
     # Run dd with the backup disk(cloneDisk) as the source. Pass the blocks through gzip to compress. Then pass to ssh to store remotely.
