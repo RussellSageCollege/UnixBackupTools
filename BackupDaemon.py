@@ -22,11 +22,12 @@ SERVER_PORT = 3000
 
 
 def backup_now():
-    i = 0
-    while i < 3:
-        print('Performing a backup...')
-        sleep(6)
-        i += 1
+    performBackup()
+    #i = 0
+    #while i < 3:
+    #    print('Performing a backup...')
+    #    sleep(6)
+    #    i += 1
     emit_new_state(STATE_FREE)
 
 
