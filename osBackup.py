@@ -61,14 +61,36 @@ def syncToBackupDrive(dirsToBackup, backupMount, cloneDisk):
             # Captures a compressed disk image and SSH's the image to a remote repo
 
 
-def captureDiskImageToRepo(cloneDisk, sshUser, sshHost, imagePath):
+def captureDiskImageToRepo(cloneDisk, sshUser, sshHost, imagePath, network_compression_level=6,
+                           repo_compression_level=9, repo_decompress=False):
     # Helpful output
     print('[INFO] Sending image of: ' + cloneDisk + ' >>> ' + sshUser + '@' + sshHost + ':' + imagePath)
     # Run dd with the backup disk(cloneDisk) as the source. Pass the blocks through gzip to compress. Then pass to ssh to store remotely.
     disk_size = os.popen("fdisk -l | grep /dev/sda | awk 'NR==1{print $5}'").read()
-    os.system(
-        'pv -p -t -e -a -b ' + cloneDisk + ' | ssh ' + sshUser + '@' + sshHost + ' "gzip -9 | /usr/local/bin/pv -b > ' + imagePath + '"'
-    )
+
+    if repo_decompress:
+        os.system(
+            'pv -p -t -e -a -b ' + cloneDisk + '| gzip -' + str(network_compression_level) + ' | ssh ' + sshUser + '@' + sshHost + ' "gunzip -c | pv -b > ' + imagePath + '"'
+        )
+    else:
+        # If the network compression level is more than the server side compression level set the server side compression level to 0
+        if (network_compression_level >= repo_compression_level):
+            repo_compression_level = 0
+
+        # If the server side compression level is 0
+        if repo_compression_level == 0:
+            # Don't bother running Gzip on the server side
+            os.system(
+                'pv -p -t -e -a -b ' + cloneDisk + '| gzip -' + str(
+                    network_compression_level) + ' | ssh ' + sshUser + '@' + sshHost + ' "pv -b > ' + imagePath + '"'
+            )
+        else:
+            # Run the backup through GZip on the server
+            os.system(
+                'pv -p -t -e -a -b ' + cloneDisk + '| gzip -' + str(
+                    network_compression_level) + ' | ssh ' + sshUser + '@' + sshHost + ' "gzip -' + str(
+                    repo_compression_level) + ' | pv -b > ' + imagePath + '"'
+            )
 
 
 # This function performs a backup
