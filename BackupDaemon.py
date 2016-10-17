@@ -26,12 +26,12 @@ def backup_now():
         performBackup()
     except Exception:
         pass
-    # i = 0
-    # while i < 3:
-    #    print('Performing a backup...')
-    #    sleep(6)
-    #    i += 1
-    emit_new_state(STATE_FREE)
+
+    i = 0
+    while i < 3:
+        print('Performing a backup...')
+        sleep(6)
+        i += 1
 
 
 def load_config():
