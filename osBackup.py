@@ -65,8 +65,9 @@ def captureDiskImageToRepo(cloneDisk, sshUser, sshHost, imagePath):
     # Helpful output
     print('[INFO] Sending image of: ' + cloneDisk + ' >>> ' + sshUser + '@' + sshHost + ':' + imagePath)
     # Run dd with the backup disk(cloneDisk) as the source. Pass the blocks through gzip to compress. Then pass to ssh to store remotely.
+    disk_size = os.popen("fdisk -l | grep /dev/sda | awk 'NR==1{print $5}'").read()
     os.system(
-        'dd status=progress bs=1M if=' + cloneDisk + ' | gzip -9 | ssh ' + sshUser + '@' + sshHost + ' "cat > ' + imagePath + '"'
+        'dd status=progress bs=4M if=' + cloneDisk + ' | pv -a -p -t -e -s ' + disk_size + ' | gzip -9 | ssh ' + sshUser + '@' + sshHost + ' "cat > ' + imagePath + '"'
     )
 
 
@@ -110,4 +111,3 @@ def performBackup():
     unMountDrive(mountDir)
     # Capture the backup disk with DD and send it to a remote repository via ssh
     captureDiskImageToRepo(cloneDisk, sshUser, sshHost, imagePath)
-
