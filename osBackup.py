@@ -71,7 +71,7 @@ def captureDiskImageToRepo(cloneDisk, sshUser, sshHost, imagePath, network_compr
     if repo_decompress:
         os.system(
             'pv -p -t -e -a -b ' + cloneDisk + '| gzip -' + str(
-                network_compression_level) + ' | ssh ' + sshUser + '@' + sshHost + ' "gunzip -c | pv -q > ' + imagePath + '"'
+                network_compression_level) + ' | ssh ' + sshUser + '@' + sshHost + ' "unpigz -c | pv -q > ' + imagePath + '"'
         )
     else:
         # If the network compression level is more than the server side compression level set the server side compression level to 0
@@ -89,7 +89,7 @@ def captureDiskImageToRepo(cloneDisk, sshUser, sshHost, imagePath, network_compr
             # Run the backup through GZip on the server
             os.system(
                 'pv -p -t -e -a -b ' + cloneDisk + '| gzip -' + str(
-                    network_compression_level) + ' | ssh ' + sshUser + '@' + sshHost + ' "gunzip -c | gzip -' + str(
+                    network_compression_level) + ' | ssh ' + sshUser + '@' + sshHost + ' "unpigz -c | pigz -' + str(
                     repo_compression_level) + ' | pv -q > ' + imagePath + '"'
             )
 
