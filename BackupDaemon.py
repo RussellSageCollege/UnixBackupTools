@@ -1,17 +1,16 @@
 #! /usr/bin/env python
 
 from __future__ import print_function
-import daemon
+import json, datetime, daemon, socket, sys, os
 from time import sleep
-import json
-import socket
 from socketIO_client import SocketIO, LoggingNamespace
-from helpers import readConfig, saveConfig
-from multiprocessing import Process, Queue
-from osBackup import performBackup
+from helpers import readConfig, saveConfig, mountDrive, unMountDrive, syncToBackupDrive, captureDiskImageToRepo
+from multiprocessing import Process
 
-STATE_BUSY = 1
 STATE_FREE = 0
+STATE_BUSY = 1
+STATE_SYNCING = 2
+STATE_CAPTURING = 3
 CURRENT_STATE = 1
 BACKUP_PROCESS = None
 IO = None
@@ -23,8 +22,50 @@ SERVER_PORT = 3000
 
 def backup_now():
     try:
-        image_path = performBackup()
-        emit_backup_completed(image_path)
+        # Get the current backup timestamp
+        timeStamp = datetime.datetime.now().strftime("%A-%d-%B-%Y-%I-%M%p")
+        # Get the system hostname
+        hostname = HOST_NAME
+        # Read the config file
+        config = readConfig()
+        # Get this programs config
+        config = config['osBackup']
+        # Get the disk that we are trying to back up for disk image
+        cloneDisk = config['disk_for_clone']
+        # Get the partition that we are trying to back up for rSync
+        clonePart = config['root_partition_destination']
+        # The path to mount the backup disk(cloneDisk) on
+        mountDir = os.path.abspath(config['mount_dir_for_clone'])
+        # an array of local directories on the root FS. These dirs are rSynced to the backup disk(cloneDisk)
+        dirsToBackup = config['directories_to_backup']
+        # The remote repo dir on the remote host. This is were our dd images will be stored via ssh
+        repoLocation = config['remote_repo_backup_location']
+        # The the remote ssh user for the remote repo host
+        sshUser = config['remote_repo_user']
+        # The address or dns name of the remote repo
+        sshHost = config['remote_repo_host']
+        # Build a file path for the remote repo. This is the file path of the new image
+        imagePath = os.path.join(repoLocation, 'backup-' + HOST_NAME + '-' + timeStamp + '.img.gz')
+        # Helpful output
+        print('[INFO] Mounting disk: ' + clonePart + ' >>> ' + mountDir)
+        # Mount the backup disk(clonePart) to the mount folder(mountDir)
+        mountDrive(clonePart, mountDir)
+        # Helpful output
+        print('[INFO] Starting sync to: ' + mountDir)
+        # Notify the server that you are syncing
+        emit_new_state(STATE_SYNCING)
+        # rSync target folders to backup mount
+        syncToBackupDrive(dirsToBackup, mountDir, clonePart)
+        # Helpful output
+        print('[INFO] Un-mounting disk: ' + clonePart + ' --- ' + mountDir)
+        # Un-mount the backup disk(clonePart) from the mount folder(mountDir)
+        unMountDrive(mountDir)
+        # Notify the server that you are capturing an image
+        emit_new_state(STATE_CAPTURING)
+        # Capture the backup disk with DD and send it to a remote repository via ssh
+        captureDiskImageToRepo(cloneDisk, sshUser, sshHost, imagePath)
+        # Notify the server of the new name
+        emit_backup_completed(imagePath)
     except Exception:
         pass
 
