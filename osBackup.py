@@ -67,7 +67,7 @@ def captureDiskImageToRepo(cloneDisk, sshUser, sshHost, imagePath):
     # Run dd with the backup disk(cloneDisk) as the source. Pass the blocks through gzip to compress. Then pass to ssh to store remotely.
     disk_size = os.popen("fdisk -l | grep /dev/sda | awk 'NR==1{print $5}'").read()
     os.system(
-        'dd bs=4M if=' + cloneDisk + ' | pv -a -p -t -e -s ' + disk_size + ' | gzip -9 | ssh ' + sshUser + '@' + sshHost + ' "cat > ' + imagePath + '"'
+        'dd bs=4M if=' + cloneDisk + ' | pv -p -t -r -b -e -s ' + disk_size + ' | gzip -9 | ssh ' + sshUser + '@' + sshHost + ' "cat > ' + imagePath + '"'
     )
 
 
