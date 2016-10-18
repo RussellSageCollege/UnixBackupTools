@@ -163,6 +163,7 @@ def on_new_backup_task(*args):
 
 def on_end_backup_task(*args):
     if CURRENT_STATE == STATE_BUSY:
+        global BACKUP_PROCESS
         # Terminate the backup task
         BACKUP_PROCESS.terminate()
         # Notify the server that you are free
